@@ -39,6 +39,6 @@ cat .ssh/authorized_keys | dokku ssh-keys:add  admin
 # Domain
 dokku domains:set-global $DOMAIN
 
-# Install needed plugins - PostgreSQL or similar should work too, but YMMV.
+# Install needed plugins.
 dokku plugin:install https://github.com/dokku/dokku-$DATABASE_PLUGIN.git
 dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
