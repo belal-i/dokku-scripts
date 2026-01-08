@@ -2,6 +2,24 @@
 
 set -eo pipefail
 
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root" >&2
+  exit 1
+fi
+
+log() {
+  echo "==> $*"
+}
+
+install_plugin() {
+  local url="$1"
+  if ! dokku plugin:list | grep -q "$(basename "$url" .git)"; then
+    dokku plugin:install "$url"
+  else
+    log "Plugin already installed: $url"
+  fi
+}
+
 # Defaults
 DOKKU_TAG="v0.37.4"
 DATABASE_TYPE="mysql"
@@ -25,20 +43,25 @@ if [ -z "$DOMAIN" ]; then
   exit 1
 fi
 
-echo "Installing Dokku"
-echo "  Domain: $DOMAIN"
-echo "  Dokku tag: $DOKKU_TAG"
-echo "  Database plugin: $DATABASE_TYPE"
+log "Installing Dokku"
+log "  Domain: $DOMAIN"
+log "  Dokku tag: $DOKKU_TAG"
+log "  Database plugin: $DATABASE_TYPE"
 
-wget -NP . https://dokku.com/install/$DOKKU_TAG/bootstrap.sh
-bash bootstrap.sh
+wget -NP . "https://dokku.com/install/$DOKKU_TAG/bootstrap.sh"
+DOKKU_TAG="$DOKKU_TAG" bash bootstrap.sh
 
 # SSH key
-cat .ssh/authorized_keys | dokku ssh-keys:add  admin
+if [[ -f /root/.ssh/authorized_keys ]]; then
+  dokku ssh-keys:add admin < /root/.ssh/authorized_keys
+else
+  log "No authorized_keys found, skipping SSH key import"
+fi
+
 
 # Domain
-dokku domains:set-global $DOMAIN
+dokku domains:set-global "$DOMAIN"
 
 # Install needed plugins.
-dokku plugin:install https://github.com/dokku/dokku-$DATABASE_TYPE.git
-dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+install_plugin "https://github.com/dokku/dokku-${DATABASE_TYPE}.git"
+install_plugin "https://github.com/dokku/dokku-letsencrypt.git"
