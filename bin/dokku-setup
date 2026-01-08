@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source lib/common.sh
+source lib/config.sh
+source lib/init.sh
+source lib/db.sh
+source lib/app.sh
+source lib/letsencrypt.sh
+
+APP_TYPE="$1"
+DOMAIN="$2"
+
+require_root
+require_app "$APP_TYPE"
+
+init_dokku "$DOMAIN"
+create_app "$APP_TYPE"
+setup_db "$APP_TYPE"
+deploy_app "$APP_TYPE"
+enable_ssl "$APP_TYPE" "$DOMAIN"
