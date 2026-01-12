@@ -4,20 +4,37 @@ set -euo pipefail
 
 LIB_DIR="/usr/local/lib/dokku-scripts"
 
-source "$LIB_DIR/common.sh"
+# Uncomment for local development only.
+#LIB_DIR="$HOME/.local/lib/dokku-scripts"
+
 source "$LIB_DIR/config.sh"
+source "$LIB_DIR/common.sh"
 source "$LIB_DIR/init.sh"
 source "$LIB_DIR/db.sh"
 source "$LIB_DIR/app.sh"
-#source "$LIB_DIR/letsencrypt.sh"
+source "$LIB_DIR/letsencrypt.sh"
+source "$LIB_DIR/shflags"
+
+DEFINE_string  "app"        "$DEFAULT_APP" "" "a"
+DEFINE_string  "domain"     "$DEFAULT_DOMAIN" "" "d"
+DEFINE_string  "dokku_tag"  "$DEFAULT_DOKKU_TAG" "" "t"
+DEFINE_string  "database"   "$DEFAULT_DATABASE" "" "D"
+DEFINE_string  "email"      "$DEFAULT_EMAIL" "" "e"
+DEFINE_boolean "letsencrypt" false "" "l"
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
 
 require_root
-require_args APP DOMAIN
+# TODO
+#require_args FLAGS_app FLAGS_domain
 # TODO: Validation
-#require_app "$APP_TYPE"
+#require_app "${FLAGS_app}"
 
-init_dokku "$DOMAIN" "$DOKKU_TAG" "$DATABASE"
-create_app "$APP"
-setup_db "$DATABASE" "$APP"
-deploy_app "$APP" "$DOMAIN"
-#enable_ssl "$APP" "$DOMAIN"
+init_dokku "${FLAGS_domain}" "${FLAGS_dokku_tag}" "${FLAGS_database}"
+create_app "${FLAGS_app}"
+setup_db "${FLAGS_database}" "${FLAGS_app}"
+deploy_app "${FLAGS_app}" "${FLAGS_domain}"
+if [ ${FLAGS_letsencrypt} -eq ${FLAGS_TRUE} ]; then
+  enable_ssl "${FLAGS_app}" "${FLAGS_email}"
+fi

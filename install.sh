@@ -17,6 +17,8 @@ git clone "$REPO_URL" "$TMP_DIR"
 # install libs
 mkdir -p "$LIB_DIR"
 cp -r "$TMP_DIR/lib/"* "$LIB_DIR/"
+wget -O "$LIB_DIR/shflags" https://raw.githubusercontent.com/kward/shflags/master/shflags
+chmod 755 "$LIB_DIR/shflags"
 
 # install executable
 cp "$TMP_DIR/bin/dokku-setup" "$BIN_DIR/dokku-setup"

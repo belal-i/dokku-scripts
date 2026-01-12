@@ -10,6 +10,8 @@ echo "[*] Installing dokku-scripts"
 # install libs
 mkdir -p "$LIB_DIR"
 cp -r ./lib/* "$LIB_DIR/"
+wget -O "$LIB_DIR/shflags" https://raw.githubusercontent.com/kward/shflags/master/shflags
+chmod 755 "$LIB_DIR/shflags"
 
 # install executable
 cp ./bin/dokku-setup "$BIN_DIR/dokku-setup"

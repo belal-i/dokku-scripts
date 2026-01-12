@@ -12,6 +12,8 @@ Required:
 Optional:
   -t <tag>        Dokku version tag
   -p <db>         Database plugin (default: mysql)
+  -l              Enable SSL with letsencrypt (subject to rate limits)
+  -e              Email, required if running with -l
 EOF
   exit 1
 }
@@ -23,24 +25,25 @@ require_root() {
   fi
 }
 
-require_args() {
-  local missing=()
-
-  for var in "$@"; do
-    if [[ -z "${!var:-}" ]]; then
-      missing+=("$var")
-    fi
-  done
-
-  if (( ${#missing[@]} > 0 )); then
-    echo "Error: missing required arguments:" >&2
-    for m in "${missing[@]}"; do
-      echo "  - $m" >&2
-    done
-    echo >&2
-    usage
-  fi
-}
+# TODO
+#require_args() {
+#  local missing=()
+#
+#  for var in "$@"; do
+#    if [[ "$var" -eq "" ]]; then
+#      missing+=("$var")
+#    fi
+#  done
+#
+#  if (( ${#missing[@]} > 0 )); then
+#    echo "Error: missing required arguments:" >&2
+#    for m in "${missing[@]}"; do
+#      echo "  - $m" >&2
+#    done
+#    echo >&2
+#    usage
+#  fi
+#}
 
 install_plugin() {
   local plugin="$1"
@@ -81,16 +84,3 @@ init_dokku() {
   install_plugin "$database" "https://github.com/dokku/dokku-${database}.git"
   install_plugin "letsencrypt" "https://github.com/dokku/dokku-letsencrypt.git"
 }
-
-while getopts "a:d:t:p:" opt; do
-  case "$opt" in
-    a) APP="$OPTARG" ;;
-    d) DOMAIN="$OPTARG" ;;
-    t) DOKKU_TAG="$OPTARG" ;;
-    p) DATABASE="$OPTARG" ;;
-    *)
-      echo usage
-      exit 1
-      ;;
-  esac
-done
