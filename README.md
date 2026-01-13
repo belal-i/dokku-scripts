@@ -6,5 +6,5 @@ Quickly install various kinds of apps.
 ### Installing
 
 ```
-curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scripts/develop/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scripts/master/install.sh | bash
 ```
