@@ -11,3 +11,13 @@ deploy_app() {
   dokku domains:add "$app" "$domain"
   dokku domains:remove "$app" "${app}.${domain}"
 }
+
+mount_volume() {
+  local app="$1"
+  local host_dir="/var/lib/dokku/data/storage/${app}"
+
+  if [[ ! -z "${APP_VOLUME[$app]}" ]]; then
+    mkdir -p "$host_dir"
+    dokku storage:mount "$app" "${host_dir}:${APP_VOLUME[$app]}"
+  fi
+}
