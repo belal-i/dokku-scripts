@@ -22,8 +22,15 @@ DEFINE_string  "database"   "$DEFAULT_DATABASE" "" "D"
 DEFINE_string  "email"      "$DEFAULT_EMAIL" "" "e"
 DEFINE_boolean "letsencrypt" false "" "l"
 
+DEFINE_boolean "version" false "" "v"
+
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
+
+if [[ ${FLAGS_version} -eq ${FLAGS_TRUE} ]]; then
+  echo "dokku-scrubs v$DOKKU_SCRUBS_VERSION"
+  exit 0
+fi
 
 require_root
 # TODO: Improve validation
