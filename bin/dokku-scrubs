@@ -21,6 +21,7 @@ DEFINE_string  "dokku_tag"  "$DEFAULT_DOKKU_TAG" "" "t"
 DEFINE_string  "database"   "$DEFAULT_DATABASE" "" "D"
 DEFINE_string  "email"      "$DEFAULT_EMAIL" "" "e"
 DEFINE_boolean "letsencrypt" false "" "l"
+DEFINE_boolean "testcert" false "" "T"
 
 DEFINE_boolean "version" false "" "v"
 
@@ -49,5 +50,5 @@ setup_db "${FLAGS_database}" "${FLAGS_app}"
 mount_volume "${FLAGS_app}"
 deploy_app "${FLAGS_app}" "${FLAGS_domain}"
 if [ ${FLAGS_letsencrypt} -eq ${FLAGS_TRUE} ]; then
-  enable_ssl "${FLAGS_app}" "${FLAGS_email}"
+  enable_ssl "${FLAGS_app}" "${FLAGS_email}" "${FLAGS_testcert}"
 fi
