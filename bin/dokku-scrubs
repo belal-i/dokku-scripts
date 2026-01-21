@@ -49,6 +49,8 @@ create_app "${FLAGS_app}"
 setup_db "${FLAGS_database}" "${FLAGS_app}"
 mount_volume "${FLAGS_app}"
 deploy_app "${FLAGS_app}" "${FLAGS_domain}"
+map_port "${FLAGS_app}"
+
 if [ ${FLAGS_letsencrypt} -eq ${FLAGS_TRUE} ]; then
   enable_ssl "${FLAGS_app}" "${FLAGS_email}" "${FLAGS_testcert}"
 fi

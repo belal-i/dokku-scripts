@@ -21,3 +21,11 @@ mount_volume() {
     dokku storage:mount "$app" "${host_dir}:${APP_VOLUME[$app]}"
   fi
 }
+
+map_port() {
+  local app="$1"
+
+  if [[ ! -z "${APP_PORT_MAPPING[$app]}" ]]; then
+    dokku ports:add "$app" "http:80:${APP_PORT_MAPPING[$app]}"
+  fi
+}
