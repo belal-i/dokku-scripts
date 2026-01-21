@@ -2,13 +2,13 @@ DOKKU_SCRUBS_VERSION="0.2.0-dev"
 
 # Defaults
 DEFAULT_APP=""
+DEFAULT_APP_VERSION="latest"
 DEFAULT_DOMAIN=""
 DEFAULT_DOKKU_TAG="v0.37.5"
 DEFAULT_DATABASE="mysql"
 DEFAULT_EMAIL=""
 DEFAULT_LETSENCRYPT=0
 
-declare -A APP_IMAGE
 declare -A APP_DB
 declare -A APP_DB_HOST_VAR
 declare -A APP_DB_NAME_VAR
@@ -16,12 +16,6 @@ declare -A APP_DB_USER_VAR
 declare -A APP_DB_PASS_VAR
 declare -A APP_VOLUME
 declare -A APP_PORT_MAPPING
-
-# Image
-# TODO: Support versions as well, defaulting to 'latest'.
-APP_IMAGE[wordpress]="wordpress:latest"
-APP_IMAGE[joomla]="joomla:latest"
-APP_IMAGE[redmine]="redmine:latest"
 
 # Database type
 APP_DB[wordpress]="mysql"
