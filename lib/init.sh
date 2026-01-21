@@ -82,5 +82,5 @@ init_dokku() {
 
   # Install needed plugins.
   install_plugin "$database" "https://github.com/dokku/dokku-${database}.git"
-  install_plugin "letsencrypt" "https://github.com/dokku/dokku-letsencrypt.git"
+  install_plugin "letsencrypt" "https://github.com/belal-i/dokku-letsencrypt.git"
 }
