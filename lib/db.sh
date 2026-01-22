@@ -4,7 +4,9 @@ setup_db() {
   local db_slug="${app}-db"
   local db_name="${app}_db"
 
-  local db_password="$(openssl rand -base64 24)"
+  # Autogenerate, but restrict to alphanumeric characters,
+  # to avoid URI parsing issues (Redmine, etc.)
+  local db_password="$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32)"
 
   # TODO: Idempotency
   dokku "$db:create" "$db_slug" --password "$db_password" || true

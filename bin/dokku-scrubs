@@ -15,14 +15,16 @@ source "$LIB_DIR/app.sh"
 source "$LIB_DIR/letsencrypt.sh"
 source "$LIB_DIR/shflags"
 
-DEFINE_string  "app"        "$DEFAULT_APP" "" "a"
-DEFINE_string  "domain"     "$DEFAULT_DOMAIN" "" "d"
-DEFINE_string  "dokku_tag"  "$DEFAULT_DOKKU_TAG" "" "t"
-DEFINE_string  "database"   "$DEFAULT_DATABASE" "" "D"
-DEFINE_string  "email"      "$DEFAULT_EMAIL" "" "e"
-DEFINE_boolean "letsencrypt" false "" "l"
+DEFINE_string  "app"         "$DEFAULT_APP" "the type of app to deploy" "a"
+DEFINE_string  "appversion"  "$DEFAULT_APP_VERSION" "the app's image tag. default: $DEFAULT_APP_VERSION" "V"
+DEFINE_string  "domain"      "$DEFAULT_DOMAIN" "the domain of your server" "d"
+DEFINE_string  "dokku_tag"   "$DEFAULT_DOKKU_TAG" "version of Dokku to use. default: $DEFAULT_DOKKU_TAG" "t"
+DEFINE_string  "database"    "$DEFAULT_DATABASE" "the type of database to use. default: $DEFAULT_DATABASE" "D"
+DEFINE_string  "email"       "$DEFAULT_EMAIL" "email address for letsencrypt" "e"
+DEFINE_boolean "letsencrypt" false "pass this flag to enable SSL" "l"
+DEFINE_boolean "testcert"    false "pass this flag along with --letsencrypt, to get certs from the staging server" "T"
 
-DEFINE_boolean "version" false "" "v"
+DEFINE_boolean "version" false "show version and exit" "v"
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
@@ -47,7 +49,9 @@ init_dokku "${FLAGS_domain}" "${FLAGS_dokku_tag}" "${FLAGS_database}"
 create_app "${FLAGS_app}"
 setup_db "${FLAGS_database}" "${FLAGS_app}"
 mount_volume "${FLAGS_app}"
-deploy_app "${FLAGS_app}" "${FLAGS_domain}"
+deploy_app "${FLAGS_app}" "${FLAGS_domain}" "${FLAGS_appversion}"
+map_port "${FLAGS_app}"
+
 if [ ${FLAGS_letsencrypt} -eq ${FLAGS_TRUE} ]; then
-  enable_ssl "${FLAGS_app}" "${FLAGS_email}"
+  enable_ssl "${FLAGS_app}" "${FLAGS_email}" "${FLAGS_testcert}"
 fi
