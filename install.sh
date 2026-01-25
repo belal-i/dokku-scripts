@@ -12,7 +12,7 @@ echo "[*] Installing dokku-scrubs"
 TMP_DIR="$(mktemp -d)"
 trap '[[ -n "$TMP_DIR" ]] && rm -rf "$TMP_DIR"' EXIT
 
-git clone "$REPO_URL" "$TMP_DIR" --branch develop
+git clone "$REPO_URL" "$TMP_DIR" --branch feature/gh-11-odoo
 
 # install libs
 mkdir -p "$LIB_DIR"

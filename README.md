@@ -14,7 +14,7 @@ website will be running within 5 minutes, powered by Dokku.
 ### Installing
 
 ```
-curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scrubs/develop/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scrubs/feature/gh-11-odoo/install.sh | bash
 ```
 
 ### Usage
