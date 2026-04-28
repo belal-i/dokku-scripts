@@ -1,4 +1,4 @@
-DOKKU_SCRUBS_VERSION="0.2.4-dev"
+DOKKU_SCRUBS_VERSION="0.3.0-beta-1"
 
 # Defaults
 DEFAULT_APP_VERSION="latest"
