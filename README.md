@@ -7,14 +7,15 @@ website will be running within 5 minutes, powered by Dokku.
 
 * WordPress
 * Joomla
-* Redmine
+* Redmine (issue tracking)
+* Dolibarr (ERP)
 * SSL via Let's Encrypt, live and test certs
 * Hopefully more soon ;-)
 
 ### Installing
 
 ```
-curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scrubs/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scrubs/develop/install.sh | bash
 ```
 
 ### Usage
