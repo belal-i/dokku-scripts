@@ -29,6 +29,9 @@ mount_volumes() {
 }
 
 map_port() {
+  # TODO: For ERPNext... this is the tricky part...
+  # ERPNext needs this?
+  # dokku config:set erpnext DOKKU_DOCKERFILE_PORTS=8000
   local app="$1"
 
   if [[ ! -z "${APP_PORT_MAPPING[$app]}" ]]; then

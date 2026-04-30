@@ -4,12 +4,16 @@ setup_db() {
   local db_slug="${app}-db"
   local db_name="${app}_db"
 
+  # TODO: For ERPNext, we would need a root password as well.
+  #
+  #
   # Autogenerate, but restrict to alphanumeric characters,
   # to avoid URI parsing issues (Redmine, etc.)
   local db_password="$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32)"
+  local db_root_password="$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32)"
 
   # TODO: Idempotency
-  dokku "$db:create" "$db_slug" --password "$db_password" || true
+  dokku "$db:create" "$db_slug" --password "$db_password" --root-password "$db_root_password" || true
   dokku "$db:link" "$db_slug" "$app" || true
 
 
