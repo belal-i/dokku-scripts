@@ -7,20 +7,25 @@ deploy_app() {
   local app="$1"
   local domain="$2"
   local version="$3"
+  local image="${APP_IMAGE[$app]:-$app}"
   # TODO: Idempotency! Right now, it keeps creating new containers.
-  dokku git:from-image "$app" "${app}:${version}"
+  dokku git:from-image "$app" "${image}:${version}"
   dokku domains:add "$app" "$domain"
   dokku domains:remove "$app" "${app}.${domain}"
 }
 
-mount_volume() {
+mount_volumes() {
   local app="$1"
-  local host_dir="/var/lib/dokku/data/storage/${app}"
+  declare -n volumes="APP_VOLUMES_${app}"
 
-  if [[ ! -z "${APP_VOLUME[$app]}" ]]; then
-    mkdir -p "$host_dir"
-    dokku storage:mount "$app" "${host_dir}:${APP_VOLUME[$app]}"
-  fi
+  for host_path in "${!volumes[@]}"; do
+    container_path="${volumes[$host_path]}"
+
+    echo "Mounting $host_path -> $container_path"
+
+    mkdir -p "$host_path"
+    dokku storage:mount "$app" "$host_path:$container_path"
+  done
 }
 
 map_port() {

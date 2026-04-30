@@ -56,7 +56,7 @@ fi
 init_dokku "${FLAGS_domain}" "${FLAGS_dokkutag}" "$database"
 create_app "${FLAGS_app}"
 setup_db "$database" "${FLAGS_app}"
-mount_volume "${FLAGS_app}"
+mount_volumes "${FLAGS_app}"
 deploy_app "${FLAGS_app}" "${FLAGS_domain}" "${FLAGS_appversion}"
 map_port "${FLAGS_app}"
 
