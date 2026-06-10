@@ -1,6 +1,8 @@
 create_app() {
   local app="$1"
-  dokku apps:create "$app" || true
+
+  dokku apps:exists "$app" >/dev/null 2>&1 \
+    || dokku apps:create "$app"
 }
 
 deploy_app() {
@@ -8,7 +10,7 @@ deploy_app() {
   local domain="$2"
   local version="$3"
   local image="${APP_IMAGE[$app]:-$app}"
-  # TODO: Idempotency! Right now, it keeps creating new containers.
+
   dokku git:from-image "$app" "${image}:${version}"
   dokku domains:add "$app" "$domain"
   dokku domains:remove "$app" "${app}.${domain}"
