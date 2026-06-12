@@ -4,11 +4,15 @@ setup_db() {
   local db_slug="${app}-db"
   local db_name="${app}_db"
 
+  if dokku "${db}:exists" "$db_slug" >/dev/null 2>&1; then
+    log "Database service $db_slug already exists, skipping setup"
+    return 0
+  fi
+
   # Autogenerate, but restrict to alphanumeric characters,
   # to avoid URI parsing issues (Redmine, etc.)
   local db_password="$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32)"
 
-  # TODO: Idempotency
   dokku "$db:create" "$db_slug" --password "$db_password" || true
   dokku "$db:link" "$db_slug" "$app" || true
 

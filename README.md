@@ -36,9 +36,3 @@ The following examples should be self explanatory.
   ```
   dokku-scrubs --app redmine --domain example.com --letsencrypt --email user@example.com --testcert
   ```
-
-### Known issues
-
-It's not idempotent. It's only meant to be run once on your server, to conveniently spin everything up.
-If you need to adjust or extend your environment, [Dokku](https://dokku.com/) has excellent
-support for all of that.
