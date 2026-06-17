@@ -7,13 +7,19 @@ create_app() {
 
 deploy_app() {
   local app="$1"
-  local domain="$2"
-  local version="$3"
+  local raw_domain="$2"
+  local wwwsubdomain="$3"
+  local version="$4"
+
   local image="${APP_IMAGE[$app]:-$app}"
 
+  build_domains "$raw_domain" "$wwwsubdomain"
+
+  log "Adding app domains: ${DOMAINS[*]}"
+
   dokku git:from-image "$app" "${image}:${version}"
-  dokku domains:add "$app" "$domain"
-  dokku domains:remove "$app" "${app}.${domain}"
+  dokku domains:add "$app" "${DOMAINS[@]}"
+  dokku domains:remove "$app" "${app}.${raw_domain}"
 }
 
 mount_volumes() {

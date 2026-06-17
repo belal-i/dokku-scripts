@@ -27,9 +27,10 @@ The following examples should be self explanatory.
   dokku-scrubs --app wordpress --domain example.com --letsencrypt --email user@example.com
   ```
 
-* Set up production ready Joomla site, use an older nonstandard version.
+* Set up production ready Joomla site, use an older nonstandard version. Also, configure the
+  `www` subdomain alongside the apex domain.
   ```
-  dokku-scrubs --app joomla --appversion 5.4.2 --domain example.com --letsencrypt --email user@example.com
+  dokku-scrubs --app joomla --appversion 5.4.2 --domain example.com --letsencrypt --email user@example.com --wwwsubdomain
   ```
 
 * Set up Redmine (excellent open source issue tracker). Use a test certificate for SSL.
