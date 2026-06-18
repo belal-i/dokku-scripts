@@ -15,9 +15,14 @@ deploy_app() {
 
   build_domains "$raw_domain" "$wwwsubdomain"
 
-  log "Adding app domains: ${DOMAINS[*]}"
+  # Deploy app from image
+  # TODO: This could be more robust, but there is currently no convenient
+  # API to check this.
+  if ! dokku git:from-image "$app" "${image}:${version}"; then
+    log "${image}:${version} already deployed, continuing"
+  fi
 
-  dokku git:from-image "$app" "${image}:${version}"
+  # Configure domains
   dokku domains:add "$app" "${DOMAINS[@]}"
   dokku domains:remove "$app" "${app}.${raw_domain}"
 }
@@ -32,7 +37,9 @@ mount_volumes() {
     echo "Mounting $host_path -> $container_path"
 
     mkdir -p "$host_path"
-    dokku storage:mount "$app" "$host_path:$container_path"
+    # TODO: Make it more robust, but Dokku currently doesn't
+    # expose a convenient API to check this.
+    dokku storage:mount "$app" "$host_path:$container_path" || true
   done
 }
 
