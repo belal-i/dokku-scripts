@@ -24,7 +24,9 @@ deploy_app() {
 
   # Configure domains
   dokku domains:add "$app" "${DOMAINS[@]}"
-  dokku domains:remove "$app" "${app}.${raw_domain}"
+  for domain in "${DOMAINS[@]}"; do
+    dokku domains:remove "$app" "${app}.${domain}" || true
+  done
 }
 
 mount_volumes() {
