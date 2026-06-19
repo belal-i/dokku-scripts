@@ -19,7 +19,7 @@ deploy_app() {
   # TODO: This could be more robust, but there is currently no convenient
   # API to check this.
   if ! dokku git:from-image "$app" "${image}:${version}"; then
-    log "${image}:${version} already deployed, continuing"
+    log "git:from-image failed, continuing (idempotency workaround)"
   fi
 
   # Configure domains
