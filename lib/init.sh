@@ -18,20 +18,23 @@ install_plugin() {
 }
 
 init_dokku() {
-  local domain="$1"
-  local dokku_tag="$2"
-  local database="$3"
+  local raw_domain="$1"
+  local wwwsubdomain="$2"
+  local dokku_tag="$3"
+  local database="$4"
+
+  build_domains "$raw_domain" "$wwwsubdomain"
 
   log "Installing Dokku"
-  log "  Domain: $domain"
+  log "  Domains: ${DOMAINS[@]}"
   log "  Dokku tag: $dokku_tag"
   log "  Database : $database"
 
   wget -NP . "https://dokku.com/install/$dokku_tag/bootstrap.sh"
   DOKKU_TAG="$dokku_tag" bash bootstrap.sh
 
-  # Domain
-  dokku domains:set-global "$domain"
+  # Domains
+  dokku domains:set-global "${DOMAINS[@]}"
 
   # Install needed plugins.
   install_plugin "$database" "https://github.com/dokku/dokku-${database}.git"

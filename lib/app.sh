@@ -7,13 +7,24 @@ create_app() {
 
 deploy_app() {
   local app="$1"
-  local domain="$2"
-  local version="$3"
+  local raw_domain="$2"
+  local wwwsubdomain="$3"
+  local version="$4"
+
   local image="${APP_IMAGE[$app]:-$app}"
 
-  dokku git:from-image "$app" "${image}:${version}"
-  dokku domains:add "$app" "$domain"
-  dokku domains:remove "$app" "${app}.${domain}"
+  build_domains "$raw_domain" "$wwwsubdomain"
+
+  # Deploy app from image
+  # TODO: This could be more robust, but there is currently no convenient
+  # API to check this.
+  if ! dokku git:from-image "$app" "${image}:${version}"; then
+    log "git:from-image failed, continuing (idempotency workaround)"
+  fi
+
+  # Configure domains
+  dokku domains:add "$app" "${DOMAINS[@]}"
+  dokku domains:remove "$app" "${app}.${raw_domain}"
 }
 
 mount_volumes() {
@@ -26,7 +37,9 @@ mount_volumes() {
     echo "Mounting $host_path -> $container_path"
 
     mkdir -p "$host_path"
-    dokku storage:mount "$app" "$host_path:$container_path"
+    # TODO: Make it more robust, but Dokku currently doesn't
+    # expose a convenient API to check this.
+    dokku storage:mount "$app" "$host_path:$container_path" || true
   done
 }
 
