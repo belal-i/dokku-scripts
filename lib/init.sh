@@ -17,6 +17,23 @@ install_plugin() {
   fi
 }
 
+init_system() {
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update
+  init_fail2ban
+  # TODO: In the future, set up other system tools here.
+}
+
+init_fail2ban() {
+  apt-get install -y fail2ban
+
+  install -Dm644 \
+    "$DOKKU_SCRUBS_ETC/jail.local" \
+    /etc/fail2ban/jail.d/dokku-scrubs.local
+
+  systemctl enable --now fail2ban
+}
+
 init_dokku() {
   local raw_domain="$1"
   local wwwsubdomain="$2"

@@ -56,6 +56,7 @@ fi
 
 domain="${FLAGS_domain#www.}"
 
+init_system
 init_dokku "$domain" "${FLAGS_wwwsubdomain}" "${FLAGS_dokkutag}" "$database"
 create_app "${FLAGS_app}"
 setup_db "$database" "${FLAGS_app}"
