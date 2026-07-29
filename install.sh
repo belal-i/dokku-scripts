@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+DEFAULT_REF=develop
+REF="${DOKKU_SCRUBS_VERSION:-$DEFAULT_REF}"
+
 REPO_URL="https://github.com/belal-i/dokku-scrubs.git"
 INSTALL_ROOT="/usr/local"
 LIB_DIR="$INSTALL_ROOT/lib/dokku-scrubs"
 BIN_DIR="$INSTALL_ROOT/bin"
 ETC_DIR="$INSTALL_ROOT/etc"
 
-echo "[*] Installing dokku-scrubs"
+echo "[*] Installing dokku-scrubs ($REF)"
 
 # temp dir
 TMP_DIR="$(mktemp -d)"
 trap '[[ -n "$TMP_DIR" ]] && rm -rf "$TMP_DIR"' EXIT
 
-git clone "$REPO_URL" "$TMP_DIR" --branch develop
+git clone \
+  --depth 1 \
+  --branch "$REF" \
+  "$REPO_URL" \
+  "$TMP_DIR"
 
 # install libs
 mkdir -p "$LIB_DIR"
@@ -29,4 +36,4 @@ cp -r "$TMP_DIR/etc/"* "$ETC_DIR/"
 cp "$TMP_DIR/bin/dokku-scrubs" "$BIN_DIR/dokku-scrubs"
 chmod 755 "$BIN_DIR/dokku-scrubs"
 
-echo "[✓] Installed dokku-scrubs to $BIN_DIR"
+echo "[✓] Installed dokku-scrubs ($REF) to $BIN_DIR"
