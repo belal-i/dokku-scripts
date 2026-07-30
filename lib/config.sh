@@ -71,11 +71,9 @@ APP_VOLUMES_wordpress=(
 APP_VOLUMES_joomla=()
 # TODO
 APP_VOLUMES_drupal=(
+  ["$BASE_STORAGE/drupal/files"]="/var/www/html/sites/default/files"
   ["$BASE_STORAGE/drupal/modules"]="/var/www/html/modules"
-  ["$BASE_STORAGE/drupal/profiles"]="/var/www/html/profiles"
-  ["$BASE_STORAGE/drupal/sites"]="/var/www/html/sites"
   ["$BASE_STORAGE/drupal/themes"]="/var/www/html/themes"
-
 )
 APP_VOLUMES_redmine=()
 APP_VOLUMES_dolibarr=(
