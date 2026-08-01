@@ -1,0 +1,10 @@
+[wordpress]
+
+enabled = true
+port = http,https
+filter = wordpress
+logpath = /var/log/nginx/wordpress-access.log
+
+findtime = 10m
+maxretry = 20
+bantime = 1h
