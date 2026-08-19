@@ -31,14 +31,31 @@ deploy_app() {
 
 mount_volumes() {
   local app="$1"
+  local version="$2"
+
   declare -n volumes="APP_VOLUMES_${app}"
 
   for host_path in "${!volumes[@]}"; do
     container_path="${volumes[$host_path]}"
 
-    echo "Mounting $host_path -> $container_path"
-
     mkdir -p "$host_path"
+
+    # App specific cases
+    # Drupal (see https://github.com/docker-library/drupal/issues/3 )
+    if [[ "$app" == "drupal" && "$container_path" == "/var/www/html/sites" ]]; then
+      # Making sure we don't overwrite user data with new image initialization!
+      if [[ -z "$(find "$host_path" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
+        log "Initializing Drupal sites directory"
+
+        docker run --rm \
+          "${APP_IMAGE[$app]}:${version}" \
+          tar -cC /var/www/html/sites . |
+          tar -xC "$host_path"
+      fi
+    fi
+
+    log "Mounting $host_path -> $container_path"
+
     # TODO: Make it more robust, but Dokku currently doesn't
     # expose a convenient API to check this.
     dokku storage:mount "$app" "$host_path:$container_path" || true

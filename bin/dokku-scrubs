@@ -60,7 +60,7 @@ init_system "${FLAGS_app}"
 init_dokku "$domain" "${FLAGS_wwwsubdomain}" "${FLAGS_dokkutag}" "$database"
 create_app "${FLAGS_app}"
 setup_db "$database" "${FLAGS_app}"
-mount_volumes "${FLAGS_app}"
+mount_volumes "${FLAGS_app}" "${FLAGS_appversion}"
 deploy_app "${FLAGS_app}" "$domain" "${FLAGS_wwwsubdomain}" "${FLAGS_appversion}"
 map_port "${FLAGS_app}"
 

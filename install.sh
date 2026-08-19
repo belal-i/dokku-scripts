@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEFAULT_REF=v0.6.0
+DEFAULT_REF=develop
 REF="${DOKKU_SCRUBS_VERSION:-$DEFAULT_REF}"
 
 REPO_URL="https://github.com/belal-i/dokku-scrubs.git"

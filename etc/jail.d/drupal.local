@@ -1,0 +1,10 @@
+[drupal]
+
+enabled = true
+port = http,https
+filter = drupal
+logpath = /var/log/nginx/drupal-access.log
+
+findtime = 10m
+maxretry = 20
+bantime = 1h
