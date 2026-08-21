@@ -9,11 +9,14 @@ deploy_app() {
   local app="$1"
   local raw_domain="$2"
   local wwwsubdomain="$3"
-  local version="$4"
+  local secondary="$4"
+  local version="$5"
 
   local image="${APP_IMAGE[$app]:-$app}"
 
-  build_domains "$raw_domain" "$wwwsubdomain"
+  # Clear global domains from potential previous runs.
+  # Fixes idempotency and secondary apps.
+  dokku domains:clear-global
 
   # Deploy app from image
   # TODO: This could be more robust, but there is currently no convenient
@@ -22,11 +25,14 @@ deploy_app() {
     log "git:from-image failed, continuing (idempotency workaround)"
   fi
 
-  # Configure domains
-  dokku domains:add "$app" "${DOMAINS[@]}"
-  for domain in "${DOMAINS[@]}"; do
-    dokku domains:remove "$app" "${app}.${domain}" || true
-  done
+  # Configure domains, unless we're installing a secondary app.
+  if [[ ! "$secondary" -eq ${FLAGS_TRUE} ]]; then
+    build_domains "$raw_domain" "$wwwsubdomain"
+    dokku domains:add "$app" "${DOMAINS[@]}"
+    for domain in "${DOMAINS[@]}"; do
+      dokku domains:remove "$app" "${app}.${domain}" || true
+    done
+  fi
 }
 
 mount_volumes() {

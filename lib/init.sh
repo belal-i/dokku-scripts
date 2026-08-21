@@ -59,21 +59,16 @@ init_fail2ban() {
 init_dokku() {
   local raw_domain="$1"
   local wwwsubdomain="$2"
-  local dokku_tag="$3"
-  local database="$4"
-
-  build_domains "$raw_domain" "$wwwsubdomain"
+  local secondary="$3"
+  local dokku_tag="$4"
+  local database="$5"
 
   log "Installing Dokku"
-  log "  Domains: ${DOMAINS[@]}"
   log "  Dokku tag: $dokku_tag"
   log "  Database : $database"
 
   wget -NP . "https://dokku.com/install/$dokku_tag/bootstrap.sh"
   DOKKU_TAG="$dokku_tag" bash bootstrap.sh
-
-  # Domains
-  dokku domains:set-global "${DOMAINS[@]}"
 
   # Install needed plugins.
   install_plugin "$database" "https://github.com/dokku/dokku-${database}.git"
