@@ -6,6 +6,7 @@ website will be running within 5 minutes, powered by Dokku.
 #### Features
 
 * WordPress
+* Drupal
 * Joomla
 * Redmine (issue tracking)
 * Dolibarr (ERP)
@@ -16,7 +17,7 @@ website will be running within 5 minutes, powered by Dokku.
 
 ```
 curl -fsSL https://raw.githubusercontent.com/belal-i/dokku-scrubs/master/install.sh \
-    | DOKKU_SCRUBS_VERSION=v0.6.0 bash
+    | DOKKU_SCRUBS_VERSION=v0.7.0 bash
 ```
 
 ### Usage
@@ -38,3 +39,13 @@ The following examples should be self explanatory.
   ```
   dokku-scrubs --app redmine --domain example.com --letsencrypt --email user@example.com --testcert
   ```
+
+#### Note about configuring database connection via web installer
+
+Certain apps (for example Drupal), require to configure, among other things,
+the database connection via their respective web installer.
+This information can be retrieved via, for example, something like:
+
+```
+dokku mysql:info drupal-db
+```

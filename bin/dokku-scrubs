@@ -13,6 +13,7 @@ source "$LIB_DIR/init.sh"
 source "$LIB_DIR/db.sh"
 source "$LIB_DIR/app.sh"
 source "$LIB_DIR/letsencrypt.sh"
+source "$LIB_DIR/post-deploy.sh"
 source "$LIB_DIR/shflags"
 
 DEFINE_string  "app"          "" "the type of app to deploy" "a"
@@ -60,10 +61,12 @@ init_system "${FLAGS_app}"
 init_dokku "$domain" "${FLAGS_wwwsubdomain}" "${FLAGS_dokkutag}" "$database"
 create_app "${FLAGS_app}"
 setup_db "$database" "${FLAGS_app}"
-mount_volumes "${FLAGS_app}"
+mount_volumes "${FLAGS_app}" "${FLAGS_appversion}"
 deploy_app "${FLAGS_app}" "$domain" "${FLAGS_wwwsubdomain}" "${FLAGS_appversion}"
 map_port "${FLAGS_app}"
 
 if [ ${FLAGS_letsencrypt} -eq ${FLAGS_TRUE} ]; then
   enable_ssl "${FLAGS_app}" "${FLAGS_email}" "${FLAGS_testcert}"
 fi
+
+post_deploy

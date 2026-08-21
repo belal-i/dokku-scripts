@@ -54,8 +54,6 @@ init_fail2ban() {
       "$jail" \
       "/etc/fail2ban/jail.d/${app}.local"
   fi
-
-  systemctl restart fail2ban
 }
 
 init_dokku() {
