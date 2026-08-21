@@ -13,6 +13,7 @@ source "$LIB_DIR/init.sh"
 source "$LIB_DIR/db.sh"
 source "$LIB_DIR/app.sh"
 source "$LIB_DIR/letsencrypt.sh"
+source "$LIB_DIR/post-deploy.sh"
 source "$LIB_DIR/shflags"
 
 DEFINE_string  "app"          "" "the type of app to deploy" "a"
@@ -67,3 +68,5 @@ map_port "${FLAGS_app}"
 if [ ${FLAGS_letsencrypt} -eq ${FLAGS_TRUE} ]; then
   enable_ssl "${FLAGS_app}" "${FLAGS_email}" "${FLAGS_testcert}"
 fi
+
+post_deploy
