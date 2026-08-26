@@ -23,6 +23,8 @@ init_system() {
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
 
+  apt-get install -y jq
+
   init_fail2ban "$app"
   # TODO: In the future, set up other system tools here.
 }
