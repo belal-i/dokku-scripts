@@ -14,10 +14,6 @@ deploy_app() {
 
   local image_ref="${APP_IMAGE[$app]:-$app}:${version}"
 
-  # Clear global domains from potential previous runs.
-  # Fixes idempotency and secondary apps.
-  dokku domains:clear-global
-
   # Deploy app from image, if it has changed.
   if ! dokku git:report "$app" --git-source-image | grep -qF "$image_ref"; then
     dokku git:from-image "$app" "$image_ref"
@@ -90,7 +86,7 @@ mount_volumes() {
 map_port() {
   local app="$1"
 
-  if [[ ! -z "${APP_PORT_MAPPING[$app]}"  ]]; then
+  if [[ ! -z "${APP_PORT_MAPPING[$app]}" ]]; then
     local port="${APP_PORT_MAPPING[$app]}"
 
     if ! dokku ports:report "$app" --ports-map | grep -qF "http:80:${port}"; then
