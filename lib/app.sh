@@ -11,15 +11,13 @@ deploy_app() {
   local wwwsubdomain="$3"
   local version="$4"
 
-  local image="${APP_IMAGE[$app]:-$app}"
+  local image_ref="${APP_IMAGE[$app]:-$app}:${version}"
 
   build_domains "$raw_domain" "$wwwsubdomain"
 
-  # Deploy app from image
-  # TODO: This could be more robust, but there is currently no convenient
-  # API to check this.
-  if ! dokku git:from-image "$app" "${image}:${version}"; then
-    log "git:from-image failed, continuing (idempotency workaround)"
+  # Deploy app from image, if it has changed.
+  if ! dokku git:report "$app" --git-source-image | grep -qF "$image_ref"; then
+    dokku git:from-image "$app" "$image_ref"
   fi
 
   # Configure domains
