@@ -11,15 +11,13 @@ deploy_app() {
   local wwwsubdomain="$3"
   local version="$4"
 
-  local image="${APP_IMAGE[$app]:-$app}"
+  local image_ref="${APP_IMAGE[$app]:-$app}:${version}"
 
   build_domains "$raw_domain" "$wwwsubdomain"
 
-  # Deploy app from image
-  # TODO: This could be more robust, but there is currently no convenient
-  # API to check this.
-  if ! dokku git:from-image "$app" "${image}:${version}"; then
-    log "git:from-image failed, continuing (idempotency workaround)"
+  # Deploy app from image, if it has changed.
+  if ! dokku git:report "$app" --git-source-image | grep -qF "$image_ref"; then
+    dokku git:from-image "$app" "$image_ref"
   fi
 
   # Configure domains
@@ -29,6 +27,22 @@ deploy_app() {
   done
 }
 
+storage_mount_exists() {
+  local app="$1"
+  local host_path="$2"
+  local container_path="$3"
+
+  dokku storage:list "$app" --format json |
+    jq -e \
+      --arg host_path "$host_path" \
+      --arg container_path "$container_path" \
+      '.[] | select(
+        .host_path == $host_path and
+        .container_path == $container_path
+      )' \
+      >/dev/null
+}
+
 mount_volumes() {
   local app="$1"
   local version="$2"
@@ -36,14 +50,21 @@ mount_volumes() {
   declare -n volumes="APP_VOLUMES_${app}"
 
   for host_path in "${!volumes[@]}"; do
-    container_path="${volumes[$host_path]}"
+    local container_path="${volumes[$host_path]}"
 
-    mkdir -p "$host_path"
+    if storage_mount_exists "$app" "$host_path" "$container_path"; then
+      log "$host_path -> $container_path already mounted, skipping."
+      continue
+    fi
+
+    log "Mounting $host_path -> $container_path ..."
+
+    dokku storage:create "$app" "$host_path"
 
     # App specific cases
     # Drupal (see https://github.com/docker-library/drupal/issues/3 )
     if [[ "$app" == "drupal" && "$container_path" == "/var/www/html/sites" ]]; then
-      # Making sure we don't overwrite user data with new image initialization!
+      # Only initialize newly created storage directory, never overwrite existing data.
       if [[ -z "$(find "$host_path" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
         log "Initializing Drupal sites directory"
 
@@ -54,18 +75,20 @@ mount_volumes() {
       fi
     fi
 
-    log "Mounting $host_path -> $container_path"
+    dokku storage:mount "$app" "$host_path:$container_path"
 
-    # TODO: Make it more robust, but Dokku currently doesn't
-    # expose a convenient API to check this.
-    dokku storage:mount "$app" "$host_path:$container_path" || true
+    log "... $host_path -> $container_path mounted."
   done
 }
 
 map_port() {
   local app="$1"
 
-  if [[ ! -z "${APP_PORT_MAPPING[$app]}" ]]; then
-    dokku ports:add "$app" "http:80:${APP_PORT_MAPPING[$app]}"
+  if [[ ! -z "${APP_PORT_MAPPING[$app]}"  ]]; then
+    local port="${APP_PORT_MAPPING[$app]}"
+
+    if ! dokku ports:report "$app" --ports-map | grep -qF "http:80:${port}"; then
+      dokku ports:add "$app" "http:80:${port}"
+    fi
   fi
 }
