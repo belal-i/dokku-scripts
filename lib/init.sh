@@ -59,23 +59,20 @@ init_fail2ban() {
 }
 
 init_dokku() {
-  local raw_domain="$1"
-  local wwwsubdomain="$2"
-  local dokku_tag="$3"
-  local database="$4"
-
-  build_domains "$raw_domain" "$wwwsubdomain"
+  local dokku_tag="$1"
+  local database="$2"
+  local global_domain="$3"
 
   log "Installing Dokku"
-  log "  Domains: ${DOMAINS[@]}"
   log "  Dokku tag: $dokku_tag"
   log "  Database : $database"
 
-  wget -NP . "https://dokku.com/install/$dokku_tag/bootstrap.sh"
+  wget -NP . "https://dokku.com/install/${dokku_tag}/bootstrap.sh"
   DOKKU_TAG="$dokku_tag" bash bootstrap.sh
 
-  # Domains
-  dokku domains:set-global "${DOMAINS[@]}"
+  # Dokku has one global domain per server.
+  # All apps managed by dokku-scrubs share this base domain.
+  dokku domains:set-global "$global_domain"
 
   # Install needed plugins.
   install_plugin "$database" "https://github.com/dokku/dokku-${database}.git"

@@ -11,6 +11,7 @@ website will be running within 5 minutes, powered by Dokku.
 * Redmine (issue tracking)
 * Dolibarr (ERP)
 * SSL via Let's Encrypt, live and test certs
+* Multiple apps/subdomains on same host
 * Hopefully more soon ;-)
 
 ### Installing
@@ -36,8 +37,9 @@ The following examples should be self explanatory.
   ```
 
 * Set up Redmine (excellent open source issue tracker). Use a test certificate for SSL.
+  Also, run it as a "secondary" app on a subdomain (for example redmine.example.com) 
   ```
-  dokku-scrubs --app redmine --domain example.com --letsencrypt --email user@example.com --testcert
+  dokku-scrubs --app redmine --domain example.com --secondary --letsencrypt --email user@example.com --testcert
   ```
 
 #### Note about configuring database connection via web installer

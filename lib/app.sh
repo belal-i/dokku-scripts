@@ -9,22 +9,24 @@ deploy_app() {
   local app="$1"
   local raw_domain="$2"
   local wwwsubdomain="$3"
-  local version="$4"
+  local secondary="$4"
+  local version="$5"
 
   local image_ref="${APP_IMAGE[$app]:-$app}:${version}"
-
-  build_domains "$raw_domain" "$wwwsubdomain"
 
   # Deploy app from image, if it has changed.
   if ! dokku git:report "$app" --git-source-image | grep -qF "$image_ref"; then
     dokku git:from-image "$app" "$image_ref"
   fi
 
-  # Configure domains
-  dokku domains:add "$app" "${DOMAINS[@]}"
-  for domain in "${DOMAINS[@]}"; do
-    dokku domains:remove "$app" "${app}.${domain}" || true
-  done
+  # Configure domains, unless we're installing a secondary app.
+  if [[ ! "$secondary" -eq ${FLAGS_TRUE} ]]; then
+    build_domains "$raw_domain" "$wwwsubdomain"
+    dokku domains:add "$app" "${DOMAINS[@]}"
+    for domain in "${DOMAINS[@]}"; do
+      dokku domains:remove "$app" "${app}.${domain}" || true
+    done
+  fi
 }
 
 storage_mount_exists() {
@@ -84,7 +86,7 @@ mount_volumes() {
 map_port() {
   local app="$1"
 
-  if [[ ! -z "${APP_PORT_MAPPING[$app]}"  ]]; then
+  if [[ ! -z "${APP_PORT_MAPPING[$app]}" ]]; then
     local port="${APP_PORT_MAPPING[$app]}"
 
     if ! dokku ports:report "$app" --ports-map | grep -qF "http:80:${port}"; then
