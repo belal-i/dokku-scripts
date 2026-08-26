@@ -65,7 +65,11 @@ mount_volumes() {
 map_port() {
   local app="$1"
 
-  if [[ ! -z "${APP_PORT_MAPPING[$app]}" ]]; then
-    dokku ports:add "$app" "http:80:${APP_PORT_MAPPING[$app]}"
+  if [[ ! -z "${APP_PORT_MAPPING[$app]}"  ]]; then
+    local port="${APP_PORT_MAPPING[$app]}"
+
+    if ! dokku ports:report "$app" --ports-map | grep -qF "http:80:${port}"; then
+      dokku ports:add "$app" "http:80:${port}"
+    fi
   fi
 }
