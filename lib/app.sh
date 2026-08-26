@@ -36,6 +36,7 @@ mount_volumes() {
   for host_path in "${!volumes[@]}"; do
     container_path="${volumes[$host_path]}"
 
+    # TODO: Use dokku storage:create instead?
     mkdir -p "$host_path"
 
     # App specific cases
@@ -56,6 +57,8 @@ mount_volumes() {
 
     # TODO: Make it more robust, but Dokku currently doesn't
     # expose a convenient API to check this.
+    # TODO: We can query existing entries with:
+    # dokku storage:list-entries "$app" --format json
     dokku storage:mount "$app" "$host_path:$container_path" || true
   done
 }
